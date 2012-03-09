@@ -1,18 +1,6 @@
 Requirements:
-1) boost library
-2) running mongodb at localhost with anonymous access (I hardcoded it in)
-3) geant4 installed on your system
-
-Installation:
-Read note on make.
+1) geant4 installed on your system
 
 source yourgeant4env.sh
-make vendor #Making vendor static library. This only need to be done once. This will take a while so be patience.
 make
-
-Note on make:
-1) By default Geant4 make system forces the use of -pedantic which is not compatible with libmongo headers.
-I removed the -pedantic in $G4INSTALL/config/sys/yoursystem.gmk to make it work
-
-2) on some system boost library doesn't have mt at the end and AFAIK there is no package config for boost so.. if it doesn't link missing some boost symbol just remove all the -mt in GNUMakefile
 
