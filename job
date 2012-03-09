@@ -1,0 +1,12 @@
+# ./bin/Darwin-g++/crystal hexbig
+# ./bin/Darwin-g++/crystal hexsmall
+# ./bin/Darwin-g++/crystal square
+# ./bin/Darwin-g++/crystal hexarea
+# ./bin/Darwin-g++/crystal square 6
+# ./bin/Darwin-g++/crystal square 7
+# ./bin/Darwin-g++/crystal square 8
+./bin/Darwin-g++/crystal square 9
+./bin/Darwin-g++/crystal square 10
+./bin/Darwin-g++/crystal square 11
+./bin/Darwin-g++/crystal square 12
+./bin/Darwin-g++/crystal square 13
