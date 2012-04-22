@@ -65,6 +65,15 @@ class SquareDetector : public Detector
     virtual void setCrystalLength(double length){
         crystal_z = length;
     }
+    
+    G4Material* LYSO;
+    G4Material* Air;
+    G4Material* CarbonFiber;
+    G4Material* Mylar;
+    G4Material* Tyvek;
+    
+    G4Material* wrapping_mat;
+    void setWrappingMaterial(G4Material* mat){wrapping_mat=mat;}
   private:
     
     std::vector<SquarePosition> posmap;
@@ -85,6 +94,8 @@ class SquareDetector : public Detector
     G4double gap_x;
     G4double gap_y;
     
+    G4double wrapping_w;//width of wrapping
+    
     G4double offset_x;
     G4double offset_y;
     G4double offset_z;
@@ -95,9 +106,6 @@ class SquareDetector : public Detector
     
     G4double total_crystal_x;
     G4double total_crystal_y;
-    
-    G4Material* LYSO;
-    G4Material* Air;
     
     G4Box* world_box;
     G4LogicalVolume* world_log;

@@ -213,10 +213,10 @@ void OriginalPhysics::SetCuts()
   // set cut values for gamma at first and for e- second and next for e+,
   // because some processes for e+/e- need cut values for gamma
   //
-  SetCutValue(defaultCutValue, "gamma");
-  SetCutValue(defaultCutValue, "e-");
-  SetCutValue(defaultCutValue, "e+");
-  SetCutValue(defaultCutValue, "proton");
+  // SetCutValue(defaultCutValue, "gamma");
+  // SetCutValue(defaultCutValue, "e-");
+  // SetCutValue(defaultCutValue, "e+");
+  // SetCutValue(defaultCutValue, "proton");
 
   if (verboseLevel>0) DumpCutValuesTable();
 }

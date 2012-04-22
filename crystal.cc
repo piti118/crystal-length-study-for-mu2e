@@ -20,9 +20,11 @@
 #include "HexDetector.hh"
 #include "SquareDetector.hh"
 #include "OriginalPhysics.hh"
+#include "Materials.hh"
 #include <sstream>
 int main(int argc,char** argv){
     G4RunManager * runManager = new G4RunManager();
+    Materials materials;
     double default_length = 13;
     Detector* detector=0;
     std::string dbname("default_db");
@@ -30,15 +32,16 @@ int main(int argc,char** argv){
         std::cout << "Specify detector [hexarea|hexbig|hexsmall|square]" << std::endl;
         std::exit(1);
     }else{
+        int numring = 10;
         std::string det(argv[1]);
         if(det.compare("hexbig")==0){
-            detector = new HexDetector("hexbig",6,1.5*cm);
+            detector = new HexDetector("hexbig",numring,1.5*cm);
         }else if(det.compare("hexsmall")==0){
-            detector = new HexDetector("hexsmall",6,1.3*cm);
+            detector = new HexDetector("hexsmall",numring,1.3*cm);
         }else if(det.compare("square")==0){
-            detector = new SquareDetector(10);  
+            detector = new SquareDetector(numring);  
         }else if(det.compare("hexarea")==0){
-            detector = new HexDetector("hexarea",6,1.612*cm);
+            detector = new HexDetector("hexarea",numring,1.612*cm);
         }else{
             std::cout << "unknown detector type" << det << std::endl;
             std::exit(1);
@@ -54,6 +57,21 @@ int main(int argc,char** argv){
         default_length=length;
         dbname = dbname + "_" + ss.str();
     }
+    //material
+    if(argc>=4){
+        std::string wmat(argv[3]);
+        if(wmat=="carbonfiber"){
+            detector->setWrappingMaterial(materials.CarbonFiber);
+        }else if(wmat=="tyvek"){
+            detector->setWrappingMaterial(materials.Tyvek);
+        }else if (wmat=="mylar"){
+            detector->setWrappingMaterial(materials.Mylar);    
+        }else{
+            std::cout << "unknown wrapping material" << wmat << std::endl;
+            std::exit(1);
+        }
+    }
+    
     detector->setCrystalLength(default_length*cm);
 
   // Set mandatory initialization classes
@@ -101,11 +119,11 @@ int main(int argc,char** argv){
     G4UImanager* UImanager = G4UImanager::GetUIpointer();
 
 //batch mode
-    if (argc <= 3){
+    if (argc <= 4){
         for(int deg=0;deg<90;deg+=5){
             if(deg!=0) break;
             gen_action->SetAngle(deg);
-            runManager->BeamOn(10000);
+            runManager->BeamOn(100000);
         }
         DEDXDatabase::saveroot(dbname+".root");
     }else{

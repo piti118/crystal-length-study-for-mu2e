@@ -8,7 +8,7 @@
 #include "G4PVPlacement.hh"
 #include "G4PVReplica.hh"
 #include "G4UniformMagField.hh"
-
+#include "G4SubtractionSolid.hh"
 #include "G4GeometryManager.hh"
 #include "G4PhysicalVolumeStore.hh"
 #include "G4LogicalVolumeStore.hh"
@@ -31,7 +31,8 @@ SquareDetector::SquareDetector(int nring):
   centerrow(0),centercol(0),//int div
   idoffset(10000),
   crystal_x(3*cm),crystal_y(3*cm),crystal_z(13*cm), //crystal dimension
-  gap_x(0.1*mm),gap_y(0.1*mm), //gap
+  gap_x(0.2*mm),gap_y(0.2*mm), //gap
+  wrapping_w(0.1*mm),//wrapping width (just making sure they don't intersect 0.1*mm-epsilon)
   offset_x(0*mm),offset_y(0*mm),offset_z(0*mm), //offset
   padding_x(1*cm),padding_y(1*cm),padding_z(1*cm), //padding
   total_crystal_x(0),total_crystal_y(0),
@@ -42,6 +43,7 @@ SquareDetector::SquareDetector(int nring):
   total_crystal_y = (numcol*crystal_y + (numcol-1)*gap_y);
   assert(nring>0);
   DefineMaterials();
+  wrapping_mat = CarbonFiber;
   initPosMap();
 }
 
@@ -49,11 +51,8 @@ void SquareDetector::initPosMap(){
   posmap.clear();
   using std::max;
   using std::abs;
-  //PT_DEBUG(nring);
   for(int l=-1*nring;l<=nring;l++){
-    //PT_DEBUG("HERE");
     for(int k=-1*nring;k<=nring;k++){
-      //PT_DEBUG("HERE");
       SquarePosition sq;
       sq.l=l;sq.k=k;
       int r = max(abs(l),abs(k));
@@ -98,13 +97,32 @@ void SquareDetector::DefineMaterials(){
   G4Element* Si = nistManager->FindOrBuildElement("Si");
   G4Element* O = nistManager->FindOrBuildElement("O");
   G4Element* Ce = nistManager->FindOrBuildElement("Ce");
-  
+  G4Element* C = nistManager->FindOrBuildElement("C");
+  G4Element* H = nistManager->FindOrBuildElement("H");
+    
   LYSO = new G4Material("LYSO", 7.1*g/cm3, 5, kStateSolid);
   LYSO->AddElement(Lu, 71.43*perCent);
   LYSO->AddElement(Y, 4.03*perCent);
   LYSO->AddElement(Si, 6.37*perCent);
   LYSO->AddElement(O, 18.14*perCent);
   LYSO->AddElement(Ce, 0.02*perCent);
+  
+  CarbonFiber = new G4Material("Carbon Fiber", 1.69*g/cm3, 3, kStateSolid);
+  CarbonFiber->AddElement(C,10);
+  CarbonFiber->AddElement(H,6);
+  CarbonFiber->AddElement(O,1);
+  
+  Tyvek = new G4Material("Tyvek",0.96*g/cm3,2,kStateSolid);
+  Tyvek->AddElement(C,1);
+  Tyvek->AddElement(H,2);
+  
+  Mylar = nistManager->FindOrBuildMaterial("G4_MYLAR");
+  /*
+  new G4Material("Mylar", density= 1.397*g/cm3, ncomponents=3);
+  Myl->AddElement(C, natoms=10);
+  Myl->AddElement(H, natoms= 8);
+  Myl->AddElement(O, natoms= 4);
+  */
   
   Air = nistManager->FindOrBuildMaterial("G4_AIR");
   
@@ -116,7 +134,7 @@ G4VPhysicalVolume* SquareDetector::ConstructWorld(){
   G4double worldsize_y = total_crystal_y+2*padding_y;
   G4double worldsize_z = 2*crystal_z + 2*padding_z;
   
-  world_box = new G4Box("world_box",worldsize_x/2,worldsize_y/2,worldsize_x/2);
+  world_box = new G4Box("world_box",worldsize_x/2,worldsize_y/2,worldsize_z/2);
   world_log = new G4LogicalVolume(world_box,Air,"world_log");
   //world_log->SetVisAttributes (G4VisAttributes::Invisible);
   world_pv = new G4PVPlacement(
@@ -127,6 +145,9 @@ G4VPhysicalVolume* SquareDetector::ConstructWorld(){
       0,
       false, //no boolean
       0); //copy number
+  G4VisAttributes* worldVisAtt= new G4VisAttributes(G4Colour(0,0,1.0));
+  worldVisAtt->SetVisibility(true);
+  world_log->SetVisAttributes(worldVisAtt);
   return world_pv; 
 }
 
@@ -137,8 +158,11 @@ G4VPhysicalVolume* SquareDetector::ConstructCalorimeter(int ibox,const SquarePos
   using std::endl;
 
   char temp[100];
+  char wtemp[100];
   sprintf(temp,"crystal_%d_%d",sq.l,sq.k);
+  sprintf(wtemp,"wrap_%d_%d",sq.l,sq.k);
   string thisname(temp);
+  string wname(wtemp);
   
   G4double thisx = sq.toXY(crystal_x+gap_x).first+offset_x;
   G4double thisy = sq.toXY(crystal_y+gap_y).second+offset_y;
@@ -147,6 +171,7 @@ G4VPhysicalVolume* SquareDetector::ConstructCalorimeter(int ibox,const SquarePos
   
   G4Box* thisbox = new G4Box(thisname.c_str(), crystal_x/2,crystal_y/2,crystal_z/2);
   G4LogicalVolume* thislog = new G4LogicalVolume(thisbox, LYSO,(thisname+"_log").c_str());
+
   G4PVPlacement* thispv = new G4PVPlacement(
       0,
       G4ThreeVector(thisx,thisy,thisz),
@@ -156,11 +181,31 @@ G4VPhysicalVolume* SquareDetector::ConstructCalorimeter(int ibox,const SquarePos
       false,
       idoffset+ibox
     );
+  
+  G4Box* crys_and_wrap = new G4Box(thisname.c_str(), crystal_x/2+wrapping_w,crystal_y/2+wrapping_w,crystal_z/2+wrapping_w);
+  G4SubtractionSolid* wrapping_box = new G4SubtractionSolid(wname.c_str(), crys_and_wrap, thisbox);
+  G4LogicalVolume* wrappinglog = new G4LogicalVolume(wrapping_box, wrapping_mat, (wname+"_log").c_str());
+  G4PVPlacement* wrappv = new G4PVPlacement(
+      0,
+      G4ThreeVector(thisx,thisy,thisz),
+      wrappinglog,
+      (wname+"_pv").c_str(),
+      world_log,
+      false,
+      idoffset*3+ibox
+    );
+
   calor_box.push_back(thisbox);
   calor_log.push_back(thislog);
   calor_pv.push_back(thispv);
+  
   G4VisAttributes* simpleBoxVisAtt= new G4VisAttributes(G4Colour(1.0,0,1.0));
   simpleBoxVisAtt->SetVisibility(true);
   thislog->SetVisAttributes(simpleBoxVisAtt);
+  
+  G4VisAttributes* wrappingVisAtt= new G4VisAttributes(G4Colour(1.0,0,0));
+  wrappingVisAtt->SetVisibility(true);
+  wrappinglog->SetVisAttributes(wrappingVisAtt);
+  
   return thispv;
 }

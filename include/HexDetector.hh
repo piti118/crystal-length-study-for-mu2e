@@ -67,6 +67,7 @@ class HexDetector : public Detector
     virtual void setCrystalLength(double length){
         crystal_length=length;
     }
+    virtual void setWrappingMaterial(G4Material* mat){}
   private:
     
     G4Material* LYSO;

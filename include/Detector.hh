@@ -4,6 +4,7 @@
 // #include "BSONInterface.hh"
 #include "G4TouchableHandle.hh"
 #include "G4VUserDetectorConstruction.hh"
+#include "G4Material.hh"
 #include <vector>
 class Detector:  public G4VUserDetectorConstruction{
 public:
@@ -29,6 +30,7 @@ public:
   virtual double calorY(int id)=0;//{return 0;}
   virtual int ringno(int id)=0;//{return 0;}
   virtual int segmentno(int id)=0;//{return 0;}
+  virtual void setWrappingMaterial(G4Material* mat)=0;
   //this should return a list of crystal id
   virtual std::vector<int> crystalList()=0;//{std::vector<int> v;return v;}
 };
