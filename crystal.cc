@@ -23,6 +23,7 @@
 #include "Materials.hh"
 #include <sstream>
 int main(int argc,char** argv){
+    using namespace std;
     G4RunManager * runManager = new G4RunManager();
     Materials materials;
     double default_length = 13;
@@ -46,7 +47,6 @@ int main(int argc,char** argv){
             std::cout << "unknown detector type" << det << std::endl;
             std::exit(1);
         }
-        dbname = det;
     }
 
     //see if user specify length
@@ -64,12 +64,22 @@ int main(int argc,char** argv){
             detector->setWrappingMaterial(materials.CarbonFiber);
         }else if(wmat=="tyvek"){
             detector->setWrappingMaterial(materials.Tyvek);
-        }else if (wmat=="mylar"){
-            detector->setWrappingMaterial(materials.Mylar);    
+        }else if (wmat=="mylar"){//12 micron mylar
+            detector->setWrappingMaterial(materials.Mylar);
+            detector->setWrappingThickness(0.012*mm);
+            detector->setGap(0.025*mm);
+        }else if (wmat=="none"){//absolutely nothing in between(very thin layer of air)
+            detector->setWrappingMaterial(materials.Air);
+            detector->setWrappingThickness(0.00001*mm);
+            detector->setGap(0.00003*mm);            
         }else{
             std::cout << "unknown wrapping material" << wmat << std::endl;
             std::exit(1);
         }
+    }
+    string outfile;
+    if(argc>=5){
+        outfile = argv[4];
     }
     
     detector->setCrystalLength(default_length*cm);
@@ -119,13 +129,12 @@ int main(int argc,char** argv){
     G4UImanager* UImanager = G4UImanager::GetUIpointer();
 
 //batch mode
-    if (argc <= 4){
+    if (argc <= 5){
         for(int deg=0;deg<90;deg+=5){
-            if(deg!=0) break;
             gen_action->SetAngle(deg);
             runManager->BeamOn(100000);
         }
-        DEDXDatabase::saveroot(dbname+".root");
+        if(outfile!="") DEDXDatabase::saveroot(outfile);
     }else{
                     // interactive mode : define UI session  
 #ifdef G4UI_USE
