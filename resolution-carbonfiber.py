@@ -109,7 +109,7 @@ def doOneFit(E,range=(95.,110.),mean=104.,sigma=1.,n=20.,alpha=0.5,N=80000,
                 mean = 104.5+randn(1)*2.
                 alpha=0.5+randn(1)*0.2
             first =False
-            fit,m = fit_binpoisson(eeg,E,maxcalls=200000,bins=100,
+            fit,m = fit_binpoisson(eeg,E,maxcalls=400000,bins=100,
                         mean=mean,sigma=sigma,n=n,alpha=alpha,N=N,g_mu=0.,g_sigma=0.3,
                         limit_N=limit_N,limit_n=limit_n, limit_mean=limit_mean, limit_sigma=limit_sigma,limit_alpha=limit_alpha,
                         limit_g_mu=(-1,1),limit_g_sigma=(0.001,0.5),
@@ -133,25 +133,25 @@ myresult = {}
 # <codecell>
 
 arg = {
-      0 :{'range':(101,105.5)},
-      1 :{'range':(101,105.5)},
-      2 :{'range':(101,105.5)},
-      3 :{'range':(101,105.5)},
-      4 :{'range':(101,105.5)},
-      5 :{'range':(101,105.5)},
-      6 :{'range':(101,105.5)},
-      7 :{'range':(101,105.5)},
-      8 :{'range':(101,105.5)},
-      9 :{'range':(101,105.5)},
+      0 :{'range':(96.,105.5)},
+      1 :{'range':(96.,105.5)},
+      2 :{'range':(96.,105.5)},
+      3 :{'range':(96.,105.5)},
+      4 :{'range':(96.,105.5)},
+      5 :{'range':(96.,105.5)},
+      6 :{'range':(96.,105.5)},
+      7 :{'range':(96.,105.5)},
+      8 :{'range':(96.,105.5)},
+      9 :{'range':(96.,105.5)},
             
-      10:{'range':(101,105.5)},
-      11:{'range':(101,105.5)},
-      12:{'range':(100,105.5)},
-      13:{'range':(100,105.5)},
-      14:{'range':(98,105.5)},
-      15:{'range':(96,105.5)},
-      16:{'range':(92,105.5)},
-      17:{'range':(80,105.5)},
+      10:{'range':(96.,105.5)},
+      11:{'range':(96.,105.5)},
+      12:{'range':(90.,105.5)},
+      13:{'range':(90.,105.5)},
+      14:{'range':(90.,105.5)},
+      15:{'range':(90.,105.5)},
+      16:{'range':(80.,105.5)},
+      17:{'range':(80.,105.5)},
 }
 for i,angle in enumerate(angles):
     #if i < 10: continue

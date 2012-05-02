@@ -30,10 +30,13 @@ for mat in materials:
 ylim(0.5,3.0)
 xlabel('Angle(deg)')
 ylabel('FWHM/2.35(MeV)')
-legend(loc=2)
+legend(loc='lower right')
 grid(True)
 title(r' Energy FWHM/2.35 from Fit to Crystalball Convoluted with Gausian for each Wrapping Material');
 savefig('wrapping_mat_comparison.pdf',bbox_inches='tight')
+
+# <codecell>
+
 
 # <codecell>
 
