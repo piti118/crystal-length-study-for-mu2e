@@ -6,7 +6,8 @@ G4TARGET := $(name)
 G4EXLIB := true
 BOOSTDIR := /usr/local
 CPPVERBOSE := 1
-G4LIB_NO_SHARED := 1
+#G4LIB_NO_SHARED := 1
+G4LIB_BUILD_STATIC := 1
 TOPDIR = $(shell pwd)
 ifeq ($(G4INSTALL),)
 	$(error G4INSTALL not set. Did you source the geant4 env file?)
