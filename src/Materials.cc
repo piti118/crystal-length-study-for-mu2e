@@ -37,4 +37,6 @@ Materials::Materials(){
     */
 
     Air = nistManager->FindOrBuildMaterial("G4_AIR");
+    
+    Aluminum = nistManager->FindOrBuildMaterial("G4_Al");
 }

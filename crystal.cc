@@ -29,6 +29,7 @@ int main(int argc,char** argv){
     double default_length = 13;
     Detector* detector=0;
     std::string dbname("default_db");
+    bool vismode = false;
     if(argc < 2){
         std::cout << "Specify detector [hexarea|hexbig|hexsmall|square]" << std::endl;
         std::exit(1);
@@ -57,6 +58,8 @@ int main(int argc,char** argv){
         default_length=length;
         dbname = dbname + "_" + ss.str();
     }
+    detector->setCrystalLength(default_length*cm);
+    
     //material
     if(argc>=4){
         std::string wmat(argv[3]);
@@ -77,12 +80,26 @@ int main(int argc,char** argv){
             std::exit(1);
         }
     }
-    string outfile;
+    
+    string outfile("tmp.root");
     if(argc>=5){
         outfile = argv[4];
     }
     
-    detector->setCrystalLength(default_length*cm);
+    //aluminum thickness
+    double al_thickness= 0*mm;
+    if(argc>=6){
+        double oz;
+        std::stringstream ss(argv[5]);
+        ss >> oz;
+        detector->setoffsetz(oz*mm);
+    }
+    
+    if(argc>6){
+        vismode=true;
+    }
+
+
 
   // Set mandatory initialization classes
   //
@@ -129,7 +146,7 @@ int main(int argc,char** argv){
     G4UImanager* UImanager = G4UImanager::GetUIpointer();
 
 //batch mode
-    if (argc <= 5){
+    if (!vismode){
         for(int deg=0;deg<90;deg+=5){
             gen_action->SetAngle(deg);
             runManager->BeamOn(100000);

@@ -18,6 +18,7 @@ plot/*.gif
 *.old
 *.hdf5
 *.npy
+job
 pylib/scratch.py
 tmp/*
 !tmp/.emptyfile

@@ -87,6 +87,7 @@ G4VPhysicalVolume* SquareDetector::Construct(){
   for(unsigned int ibox=0;ibox<posmap.size();ibox++){
     ConstructCalorimeter(ibox,posmap[ibox]);
   }
+  ConstructAluminumSheet();
   return world_pv;
 }
 
@@ -125,14 +126,14 @@ void SquareDetector::DefineMaterials(){
   */
   
   Air = nistManager->FindOrBuildMaterial("G4_AIR");
-  
+  Aluminum = nistManager->FindOrBuildMaterial("G4_Al");
 }
 
 G4VPhysicalVolume* SquareDetector::ConstructWorld(){
   
-  G4double worldsize_x = total_crystal_x+2*padding_x;
-  G4double worldsize_y = total_crystal_y+2*padding_y;
-  G4double worldsize_z = 2*crystal_z + 2*padding_z;
+  G4double worldsize_x = total_crystal_x+2*padding_x+2*offset_x;
+  G4double worldsize_y = total_crystal_y+2*padding_y+2*offset_y;
+  G4double worldsize_z = 2*crystal_z + 2*padding_z+2*offset_z;
   
   world_box = new G4Box("world_box",worldsize_x/2,worldsize_y/2,worldsize_z/2);
   world_log = new G4LogicalVolume(world_box,Air,"world_log");
@@ -149,6 +150,32 @@ G4VPhysicalVolume* SquareDetector::ConstructWorld(){
   worldVisAtt->SetVisibility(true);
   world_log->SetVisAttributes(worldVisAtt);
   return world_pv; 
+}
+
+G4VPhysicalVolume* SquareDetector::ConstructAluminumSheet(){
+    if(offset_z>0.000001*mm){
+        G4double al_x = total_crystal_x;
+        G4double al_y = total_crystal_y;
+        G4double al_z = offset_z;
+        //al face at z=0
+        G4double al_zloc = offset_z/2;
+        G4Box* albox = new G4Box("al_box",al_x/2,al_y/2,al_z/2);
+        G4LogicalVolume* allog = new G4LogicalVolume(albox,Aluminum,"al_log");
+        G4PVPlacement* alpv = new G4PVPlacement(
+            0,
+            G4ThreeVector(0,0,al_zloc),
+            allog,
+            "al_pv",
+            world_log,
+            false,
+            10
+          );
+        G4VisAttributes* simpleBoxVisAtt= new G4VisAttributes(G4Colour(0.0,1.0,1.0));
+        simpleBoxVisAtt->SetVisibility(true);
+        allog->SetVisAttributes(simpleBoxVisAtt);
+        return alpv;
+    }
+    return NULL;
 }
 
 G4VPhysicalVolume* SquareDetector::ConstructCalorimeter(int ibox,const SquarePosition& sq){

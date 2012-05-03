@@ -8,6 +8,7 @@ public:
     G4Material* Tyvek;
     G4Material* Mylar;
     G4Material* CarbonFiber;
+    G4Material* Aluminum;
     Materials();
 };
 #endif

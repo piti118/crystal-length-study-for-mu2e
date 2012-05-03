@@ -32,6 +32,7 @@ public:
   virtual int segmentno(int id)=0;//{return 0;}
   virtual void setWrappingMaterial(G4Material* mat)=0;
   virtual void setWrappingThickness(G4double thickness){};
+  virtual void setoffsetz(G4double offsetz){};
   virtual void setGap(G4double gap){};
   //this should return a list of crystal id
   virtual std::vector<int> crystalList()=0;//{std::vector<int> v;return v;}

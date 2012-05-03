@@ -71,11 +71,13 @@ class SquareDetector : public Detector
     G4Material* CarbonFiber;
     G4Material* Mylar;
     G4Material* Tyvek;
+    G4Material* Aluminum;
     
     G4Material* wrapping_mat;
     void setWrappingMaterial(G4Material* mat){wrapping_mat=mat;}
     virtual void setWrappingThickness(G4double thickness){wrapping_w=thickness;}//only one side
     virtual void setGap(G4double gap){gap_x=gap;gap_y=gap;}//make sure it accomodate 2 wrapping
+    virtual void setoffsetz(G4double oz){offset_z=oz;}
   private:
     
     std::vector<SquarePosition> posmap;
@@ -120,6 +122,7 @@ class SquareDetector : public Detector
     void DefineMaterials();
     void initPosMap();
     G4VPhysicalVolume* ConstructWorld();
+    G4VPhysicalVolume* ConstructAluminumSheet();
     G4VPhysicalVolume* ConstructCalorimeter(int ibox, const SquarePosition& sq);  
 };
 
