@@ -18,8 +18,7 @@ ROOT_LIB = $(shell root-config --libs)
 
 #on somesystem there is no -mt
 BOOSTLIB := -L$(BOOSTDIR)/lib -lboost_thread-mt -lboost_filesystem-mt -lboost_program_options-mt -lboost_system-mt
-CPPFLAGS  += -O3 -Ivendor/yaml-cpp/include \
-	-Ivendor/mongo-cxx-driver-v2.0/include -D__TOP_DIR__=\"$(TOPDIR)\" $(ROOT_INC)
+CPPFLAGS  += -O3 -D__TOP_DIR__=\"$(TOPDIR)\" $(ROOT_INC)
 EXTRALIBS += $(ROOT_LIB)
 	#-Lvendor/yaml-cpp/lib -lyaml-cpp \
 	#-Lvendor/mongo-cxx-driver-v2.0/lib -lmongoclient \
