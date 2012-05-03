@@ -23,7 +23,7 @@ EventAction::~EventAction()
 void EventAction::BeginOfEventAction(const G4Event* evt)
 {
   int eventno = evt->GetEventID();
-  if (eventno%100==0){
+  if (eventno%10000==0){
     G4cout << "### Event " << evt->GetEventID() << " start." << G4endl;
   }
   Simulation* sim = Simulation::getInstance();
